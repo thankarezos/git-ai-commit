@@ -87,7 +87,7 @@ function parseArgs(argv) {
       continue;
     }
 
-    if (arg === "-h" || arg === "--help") {
+    if (arg === "-h") {
       console.log(`
 Usage:
   git aic
