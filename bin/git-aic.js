@@ -36,21 +36,31 @@ function run(command, args, options = {}) {
   });
 }
 
-
-
 function parseArgs(argv) {
   let extraPrompt = "";
   let shouldCommit = null;
   let requireEdit = null;
   let printConfig = false;
   let runInit = false;
+  let shouldAdd = false;
 
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
 
+    if (arg === "-ap" || arg === "-pa") {
+      shouldAdd = true;
+      extraPrompt = argv.slice(i + 1).join(" ");
+      break;
+    }
+
     if (arg === "-p" || arg === "--prompt") {
       extraPrompt = argv.slice(i + 1).join(" ");
       break;
+    }
+
+    if (arg === "-a" || arg === "--add") {
+      shouldAdd = true;
+      continue;
     }
 
     if (arg === "--no-commit") {
@@ -87,14 +97,18 @@ function parseArgs(argv) {
       console.log(`
 Usage:
   git aic
+  git aic -a                    # stage all changes first (git add -A)
   git aic -p "extra prompt"
+  git aic -ap "extra prompt"    # combine -a and -p
   git aic --no-commit
   git aic --config
   git aic --init
 
 Examples:
   git aic
+  git aic -a
   git aic -p "prefer docs(specs), mention Asset Management API"
+  git aic -ap "mention Asset Management API"
   git aic --no-commit -p "only generate the message"
   git aic --init                # interactive config wizard
 
@@ -116,6 +130,7 @@ Environment:
     requireEdit,
     printConfig,
     runInit,
+    shouldAdd,
   };
 }
 
@@ -182,6 +197,13 @@ const insideRepo = run("git", ["rev-parse", "--is-inside-work-tree"]);
 
 if (insideRepo.status !== 0) {
   fail("Not inside a git repository.");
+}
+
+if (args.shouldAdd) {
+  const addResult = run("git", ["add", "-A"]);
+  if (addResult.status !== 0) {
+    fail(addResult.stderr || "git add -A failed.");
+  }
 }
 
 const hasStagedChanges = run("git", ["diff", "--cached", "--quiet"]);
