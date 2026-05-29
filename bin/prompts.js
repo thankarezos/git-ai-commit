@@ -10,17 +10,21 @@ export const defaults = JSON.parse(
 
 let merged = defaults;
 
-export function applyUserOverrides(userConfig = {}) {
-  merged = {
-    ...defaults,
-    prompt: userConfig.prompt ?? defaults.prompt,
-    commitMessageTag: userConfig.commitMessageTag ?? defaults.commitMessageTag,
-    placeholders: defaults.placeholders,
+export function mergeConfig(base, userConfig = {}) {
+  return {
+    ...base,
+    prompt: userConfig.prompt ?? base.prompt,
+    commitMessageTag: userConfig.commitMessageTag ?? base.commitMessageTag,
+    placeholders: base.placeholders,
     removeLinesMatching:
-      userConfig.removeLinesMatching ?? defaults.removeLinesMatching,
+      userConfig.removeLinesMatching ?? base.removeLinesMatching,
     stopLinesMatching:
-      userConfig.stopLinesMatching ?? defaults.stopLinesMatching,
+      userConfig.stopLinesMatching ?? base.stopLinesMatching,
   };
+}
+
+export function applyUserOverrides(userConfig = {}) {
+  merged = mergeConfig(defaults, userConfig);
 }
 
 export function getConfiguration() {

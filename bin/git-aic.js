@@ -14,6 +14,7 @@ import { join } from "node:path";
 import crypto from "node:crypto";
 import { runInitWizard } from "./wizard.js";
 import { cleanCommitMessage } from "./clean.js";
+import { extractCommitMessage } from "./extract.js";
 import { runProvider } from "./run-provider.js";
 import { applyUserOverrides, getConfiguration } from "./prompts.js";
 import { getConfigPath, loadConfig } from "./get-config-path.js";
@@ -130,30 +131,6 @@ Environment:
 
 function sha256(text) {
   return crypto.createHash("sha256").update(text).digest("hex");
-}
-
-function extractCommitMessage(raw) {
-  const cfg = getConfiguration();
-  const tagRegex = new RegExp(
-    `<${cfg.commitMessageTag}>\\s*([\\s\\S]*?)\\s*<\\/${cfg.commitMessageTag}>`,
-    "i"
-  );
-  const tagMatch = raw.match(tagRegex);
-
-  if (tagMatch?.[1]) {
-    return cleanCommitMessage(tagMatch[1]);
-  }
-
-  const lines = raw.split("\n");
-  const startIndex = lines.findIndex((line) =>
-    /^[a-z]+(\([^)]+\))?!?: /.test(line.trim())
-  );
-
-  if (startIndex === -1) {
-    return "";
-  }
-
-  return cleanCommitMessage(lines.slice(startIndex).join("\n"));
 }
 
 function buildPrompt(extraPrompt) {

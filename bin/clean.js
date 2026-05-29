@@ -1,18 +1,14 @@
 import { getConfiguration } from "./prompts.js";
 
-let patterns = null;
-
-function buildPatterns() {
-  const cfg = getConfiguration();
-  return {
-    remove: (cfg.removeLinesMatching ?? []).map((source) => new RegExp(source, "i")),
-    stop: (cfg.stopLinesMatching ?? []).map((source) => new RegExp(source, "i")),
-  };
-}
-
 export function cleanCommitMessage(text) {
-  if (!patterns) patterns = buildPatterns();
-  const { remove, stop } = patterns;
+  const cfg = getConfiguration();
+  const remove = (cfg.removeLinesMatching ?? []).map(
+    (source) => new RegExp(source, "i")
+  );
+  const stop = (cfg.stopLinesMatching ?? []).map(
+    (source) => new RegExp(source, "i")
+  );
+
   const result = [];
 
   for (const line of text.split("\n")) {

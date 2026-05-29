@@ -120,6 +120,14 @@ The base prompt template, the `<commit_message>` tag, and the cleanup patterns l
 
 Patterns are case-insensitive JS regex strings.
 
+## Tests
+
+```sh
+npm test
+```
+
+Uses Node's built-in test runner (no external dependencies). Tests cover `cleanCommitMessage`, `extractCommitMessage`, and the config merge logic.
+
 ## License
 
 MIT
