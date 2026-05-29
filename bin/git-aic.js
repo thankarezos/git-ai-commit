@@ -15,14 +15,8 @@ import crypto from "node:crypto";
 import { runInitWizard } from "./wizard.js";
 import { cleanCommitMessage } from "./clean.js";
 import { runProvider } from "./run-provider.js";
-import { configuration } from "./promts.js";
+import { applyUserOverrides, getConfiguration } from "./promts.js";
 import { getConfigPath, loadConfig } from "./get-config-path.js";
-
-const promptTemplate = configuration.prompt.join("\n");
-const tagRegex = new RegExp(
-  `<${configuration.commitMessageTag}>\\s*([\\s\\S]*?)\\s*<\\/${configuration.commitMessageTag}>`,
-  "i"
-);
 
 function fail(message, code = 1) {
   console.error(message);
@@ -139,6 +133,11 @@ function sha256(text) {
 }
 
 function extractCommitMessage(raw) {
+  const cfg = getConfiguration();
+  const tagRegex = new RegExp(
+    `<${cfg.commitMessageTag}>\\s*([\\s\\S]*?)\\s*<\\/${cfg.commitMessageTag}>`,
+    "i"
+  );
   const tagMatch = raw.match(tagRegex);
 
   if (tagMatch?.[1]) {
@@ -158,8 +157,9 @@ function extractCommitMessage(raw) {
 }
 
 function buildPrompt(extraPrompt) {
-  const { extraPrompt: token, extraPromptFallback } = configuration.placeholders;
-  return promptTemplate.replaceAll(token, extraPrompt || extraPromptFallback);
+  const cfg = getConfiguration();
+  const { extraPrompt: token, extraPromptFallback } = cfg.placeholders;
+  return cfg.prompt.join("\n").replaceAll(token, extraPrompt || extraPromptFallback);
 }
 
 
@@ -183,6 +183,8 @@ try {
 } catch (error) {
   fail(error.message);
 }
+
+applyUserOverrides(config);
 
 if (args.printConfig) {
   console.log(getConfigPath());

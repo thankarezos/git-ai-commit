@@ -4,6 +4,7 @@ import { createInterface } from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
 
 import { PROVIDER_PRESETS, EDITOR_PRESETS } from "./presets.js";
+import { defaults } from "./promts.js";
 
 export async function runInitWizard(path) {
   const rl = createInterface({ input, output });
@@ -40,7 +41,16 @@ export async function runInitWizard(path) {
 
   rl.close();
 
-  const config = { provider, editor, commit, requireEdit };
+  const config = {
+    provider,
+    editor,
+    commit,
+    requireEdit,
+    prompt: defaults.prompt,
+    commitMessageTag: defaults.commitMessageTag,
+    removeLinesMatching: defaults.removeLinesMatching,
+    stopLinesMatching: defaults.stopLinesMatching,
+  };
 
   mkdirSync(dirname(path), { recursive: true });
   writeFileSync(path, JSON.stringify(config, null, 2) + "\n");
