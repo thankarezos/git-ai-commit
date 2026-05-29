@@ -9,13 +9,14 @@ import {
   statSync,
   writeFileSync,
 } from "node:fs";
-import { homedir, tmpdir } from "node:os";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import crypto from "node:crypto";
 import { runInitWizard } from "./wizard.js";
 import { cleanCommitMessage } from "./clean.js";
 import { runProvider } from "./run-provider.js";
 import { configuration } from "./configuration.js";
+import { getConfigPath, loadConfig } from "./get-config-path.js";
 
 const promptTemplate = configuration.prompt.join("\n");
 const tagRegex = new RegExp(
@@ -35,22 +36,7 @@ function run(command, args, options = {}) {
   });
 }
 
-function getConfigPath() {
-  return (
-    process.env.GIT_AIC_CONFIG ||
-    join(homedir(), ".config", "git-aic", "config.json")
-  );
-}
 
-function loadConfig() {
-  const path = getConfigPath();
-
-  try {
-    return JSON.parse(readFileSync(path, "utf8"));
-  } catch (error) {
-    fail(`Failed to read config: ${path}\n${error.message}`);
-  }
-}
 
 function parseArgs(argv) {
   let extraPrompt = "";
@@ -176,7 +162,12 @@ if (!existsSync(configPath)) {
   await runInitWizard(configPath);
 }
 
-const config = loadConfig();
+let config;
+try {
+  config = loadConfig();
+} catch (error) {
+  fail(error.message);
+}
 
 if (args.printConfig) {
   console.log(getConfigPath());
