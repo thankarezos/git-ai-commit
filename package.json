@@ -1,0 +1,16 @@
+{
+  "name": "git-ai-commit",
+  "version": "0.1.0",
+  "description": "Generate editable git commit messages using a configurable AI CLI",
+  "type": "module",
+  "bin": {
+    "git-aic": "./bin/git-aic.js"
+  },
+  "keywords": [
+    "git",
+    "ai",
+    "commit",
+    "cli"
+  ],
+  "license": "MIT"
+}

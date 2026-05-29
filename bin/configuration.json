@@ -1,0 +1,44 @@
+{
+  "prompt": [
+    "Generate a git commit message for the staged diff.",
+    "",
+    "Return the commit message ONLY inside these tags:",
+    "",
+    "<commit_message>",
+    "type(scope): summary",
+    "",
+    "optional body",
+    "</commit_message>",
+    "",
+    "Rules:",
+    "- Use Conventional Commits.",
+    "- Allowed types: feat, fix, docs, style, refactor, test, chore, build, ci, perf.",
+    "- Keep the first line under 72 characters.",
+    "- Body is optional.",
+    "- Do NOT include markdown.",
+    "- Do NOT include backticks.",
+    "- Do NOT include explanations.",
+    "- Do NOT include Co-Authored-By.",
+    "- Do NOT include Signed-off-by.",
+    "- Do NOT include AI attribution.",
+    "",
+    "Extra user instructions:",
+    "{extraPrompt}"
+  ],
+  "commitMessageTag": "commit_message",
+  "placeholders": {
+    "extraPrompt": "{extraPrompt}",
+    "extraPromptFallback": "None"
+  },
+  "removeLinesMatching": [
+    "^```",
+    "^Here.*commit message",
+    "^Co-Authored-By:",
+    "^Signed-off-by:",
+    "Claude",
+    "Anthropic"
+  ],
+  "stopLinesMatching": [
+    "^Wait.*rules"
+  ]
+}
