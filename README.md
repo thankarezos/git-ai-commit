@@ -44,6 +44,7 @@ First run launches an **interactive wizard** that asks you to pick a provider, e
 | `-a`, `--add` | Run `git add -A` before generating |
 | `-p "..."`, `--prompt "..."` | Append extra instructions to the AI prompt |
 | `-ap "..."`, `-pa "..."` | Combine `-a` and `-p` |
+| `--provider <name>`, `-P <name>` | One-off provider override. `<name>` matches a preset command (`claude`, `gemini`, `codex`, `opencode`, `llm`, `ollama`). |
 | `--no-commit` | Generate and edit, but skip the `git commit` |
 | `--commit` | Force commit (overrides `commit: false` in config) |
 | `--require-edit` | Refuse to commit if the saved message is byte-identical to what the AI produced |
@@ -100,6 +101,7 @@ The wizard ships with presets for:
 - **Claude Code** — `claude -p "{prompt}"` (reads diff from stdin)
 - **Gemini CLI** — `gemini -p "{prompt}"`
 - **Codex CLI** — `codex exec --skip-git-repo-check "{prompt}"`
+- **OpenCode** — `opencode run "{prompt}"`
 - **llm** (Simon Willison) — `llm "{prompt}"`
 - **Ollama** — `ollama run llama3 "{prompt}"`
 - **Custom** — type your own `command` and `args`

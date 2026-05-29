@@ -18,6 +18,7 @@ import { extractCommitMessage } from "./extract.js";
 import { runProvider } from "./run-provider.js";
 import { applyUserOverrides, getConfiguration } from "./prompts.js";
 import { getConfigPath, loadConfig } from "./get-config-path.js";
+import { PROVIDER_PRESETS } from "./presets.js";
 
 function fail(message, code = 1) {
   console.error(message);
@@ -38,6 +39,7 @@ function parseArgs(argv) {
   let printConfig = false;
   let runInit = false;
   let shouldAdd = false;
+  let providerName = null;
 
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
@@ -55,6 +57,20 @@ function parseArgs(argv) {
 
     if (arg === "-a" || arg === "--add") {
       shouldAdd = true;
+      continue;
+    }
+
+    if (arg === "--provider" || arg === "-P") {
+      const next = argv[i + 1];
+      if (!next || next.startsWith("-")) {
+        console.log("Available providers:");
+        for (const p of PROVIDER_PRESETS) {
+          console.log(`  ${p.command.padEnd(10)} ${p.name}`);
+        }
+        process.exit(0);
+      }
+      providerName = next;
+      i++;
       continue;
     }
 
@@ -92,9 +108,11 @@ function parseArgs(argv) {
       console.log(`
 Usage:
   git aic
-  git aic -a                    # stage all changes first (git add -A)
+  git aic -a                       # stage all changes first (git add -A)
   git aic -p "extra prompt"
-  git aic -ap "extra prompt"    # combine -a and -p
+  git aic -ap "extra prompt"       # combine -a and -p
+  git aic --provider gemini        # one-off provider override (also -P)
+  git aic --provider               # list available providers
   git aic --no-commit
   git aic --config
   git aic --init
@@ -105,7 +123,8 @@ Examples:
   git aic -p "prefer docs(specs), mention Asset Management API"
   git aic -ap "mention Asset Management API"
   git aic --no-commit -p "only generate the message"
-  git aic --init                # interactive config wizard
+  git aic --provider claude        # use Claude Code for this run
+  git aic --init                   # interactive config wizard
 
 Config:
   ~/.config/git-aic/config.json
@@ -126,6 +145,7 @@ Environment:
     printConfig,
     runInit,
     shouldAdd,
+    providerName,
   };
 }
 
@@ -163,6 +183,18 @@ try {
 
 applyUserOverrides(config);
 
+if (args.providerName) {
+  const wanted = args.providerName.toLowerCase();
+  const preset = PROVIDER_PRESETS.find(
+    (p) => p.command.toLowerCase() === wanted
+  );
+  if (!preset) {
+    const names = PROVIDER_PRESETS.map((p) => p.command).join(", ");
+    fail(`Unknown provider: ${args.providerName}. Available: ${names}`);
+  }
+  config.provider = { command: preset.command, args: preset.args };
+}
+
 if (args.printConfig) {
   console.log(getConfigPath());
   console.log(JSON.stringify(config, null, 2));
@@ -198,6 +230,8 @@ if (diff.status !== 0) {
 }
 
 const prompt = buildPrompt(args.extraPrompt);
+
+console.log(`Using provider: ${config.provider.command}`);
 
 let raw;
 try {

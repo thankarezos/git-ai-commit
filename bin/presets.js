@@ -15,6 +15,11 @@ export const PROVIDER_PRESETS = [
     args: ["exec", "--skip-git-repo-check", "{prompt}"]
   },
   {
+    name: "OpenCode",
+    command: "opencode",
+    args: ["run", "{prompt}"]
+  },
+  {
     name: "llm (Simon Willison)",
     command: "llm",
     args: ["{prompt}"]
