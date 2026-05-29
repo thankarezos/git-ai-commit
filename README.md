@@ -14,14 +14,6 @@ $ git aic -ap "mention the migration"
 npm install -g @thankarezos/git-ai-commit
 ```
 
-> If you get `EACCES` errors, either prefix with `sudo` or set a user-owned npm prefix:
-> ```sh
-> npm config set prefix ~/.npm-global
-> mkdir -p ~/.npm-global
-> # add to ~/.bashrc or ~/.zshrc:
-> export PATH="$HOME/.npm-global/bin:$PATH"
-> ```
-
 Requires **Node 18+**. Because the binary is named `git-aic`, git resolves `git aic` automatically.
 
 ### Install from source
