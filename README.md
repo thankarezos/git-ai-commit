@@ -10,15 +10,11 @@ $ git aic -ap "mention the migration"
 
 ## Install
 
-Until this is published to npm, install from source:
-
 ```sh
-git clone https://github.com/<you>/git-ai-commit.git
-cd git-ai-commit
-npm link        # symlinks `git-aic` onto your PATH
+npm install -g @thankarezos/git-ai-commit
 ```
 
-> If `npm link` fails with `EACCES`, set a user-owned npm prefix:
+> If you get `EACCES` errors, either prefix with `sudo` or set a user-owned npm prefix:
 > ```sh
 > npm config set prefix ~/.npm-global
 > mkdir -p ~/.npm-global
@@ -27,6 +23,14 @@ npm link        # symlinks `git-aic` onto your PATH
 > ```
 
 Requires **Node 18+**. Because the binary is named `git-aic`, git resolves `git aic` automatically.
+
+### Install from source
+
+```sh
+git clone https://github.com/thankarezos/git-ai-commit.git
+cd git-ai-commit
+npm link
+```
 
 ## Quick start
 
