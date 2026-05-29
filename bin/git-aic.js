@@ -15,7 +15,7 @@ import crypto from "node:crypto";
 import { runInitWizard } from "./wizard.js";
 import { cleanCommitMessage } from "./clean.js";
 import { runProvider } from "./run-provider.js";
-import { configuration } from "./configuration.js";
+import { configuration } from "./promts.js";
 import { getConfigPath, loadConfig } from "./get-config-path.js";
 
 const promptTemplate = configuration.prompt.join("\n");

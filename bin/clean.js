@@ -1,4 +1,4 @@
-import { configuration } from "./configuration.js";
+import { configuration } from "./promts.js";
 
 const removePatterns = (configuration.removeLinesMatching ?? []).map(
   (source) => new RegExp(source, "i")
