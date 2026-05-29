@@ -95,7 +95,7 @@ The wizard (`git aic --init`) writes the full defaults into your config so you c
 - **`removeLinesMatching`** — case-insensitive regex strings; matching lines are stripped from the AI's output.
 - **`stopLinesMatching`** — case-insensitive regex strings; lines from the first match onward are dropped (used to cut off AI rambling).
 
-Each field in your user config **replaces** the default if present. If you delete a field entirely, the built-in default from `bin/promts.json` is used instead.
+Each field in your user config **replaces** the default if present. If you delete a field entirely, the built-in default from `bin/prompts.json` is used instead.
 
 ## Providers
 
@@ -112,7 +112,7 @@ You can edit `provider` in the config file at any time, or rerun `git aic --init
 
 ## Customizing the prompt
 
-The base prompt template, the `<commit_message>` tag, and the cleanup patterns live in `bin/promts.json`. Edit that file to:
+The base prompt template, the `<commit_message>` tag, and the cleanup patterns live in `bin/prompts.json`. Edit that file to:
 
 - Change tone, rules, or allowed Conventional Commit types in `prompt`.
 - Add line patterns to `removeLinesMatching` to strip more AI boilerplate.

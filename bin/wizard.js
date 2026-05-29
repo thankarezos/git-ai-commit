@@ -4,7 +4,7 @@ import { createInterface } from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
 
 import { PROVIDER_PRESETS, EDITOR_PRESETS } from "./presets.js";
-import { defaults } from "./promts.js";
+import { defaults } from "./prompts.js";
 
 export async function runInitWizard(path) {
   const rl = createInterface({ input, output });

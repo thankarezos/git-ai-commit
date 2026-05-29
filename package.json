@@ -6,11 +6,31 @@
   "bin": {
     "git-aic": "./bin/git-aic.js"
   },
+  "files": [
+    "bin/",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thankarezos/git-ai-commit.git"
+  },
+  "homepage": "https://github.com/thankarezos/git-ai-commit#readme",
+  "bugs": {
+    "url": "https://github.com/thankarezos/git-ai-commit/issues"
+  },
+  "author": "thankarezos <thankarezos@gmail.com>",
   "keywords": [
     "git",
     "ai",
     "commit",
-    "cli"
+    "cli",
+    "claude",
+    "gemini",
+    "conventional-commits"
   ],
   "license": "MIT"
 }

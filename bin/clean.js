@@ -1,4 +1,4 @@
-import { getConfiguration } from "./promts.js";
+import { getConfiguration } from "./prompts.js";
 
 let patterns = null;
 

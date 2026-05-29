@@ -15,7 +15,7 @@ import crypto from "node:crypto";
 import { runInitWizard } from "./wizard.js";
 import { cleanCommitMessage } from "./clean.js";
 import { runProvider } from "./run-provider.js";
-import { applyUserOverrides, getConfiguration } from "./promts.js";
+import { applyUserOverrides, getConfiguration } from "./prompts.js";
 import { getConfigPath, loadConfig } from "./get-config-path.js";
 
 function fail(message, code = 1) {

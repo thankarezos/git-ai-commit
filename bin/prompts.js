@@ -5,7 +5,7 @@ import { dirname, join } from "node:path";
 const here = dirname(fileURLToPath(import.meta.url));
 
 export const defaults = JSON.parse(
-  readFileSync(join(here, "promts.json"), "utf8")
+  readFileSync(join(here, "prompts.json"), "utf8")
 );
 
 let merged = defaults;
