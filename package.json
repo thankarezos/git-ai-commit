@@ -1,6 +1,6 @@
 {
   "name": "@thankarezos/git-ai-commit",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Generate editable git commit messages using a configurable AI CLI",
   "type": "module",
   "bin": {
