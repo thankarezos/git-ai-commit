@@ -51,6 +51,7 @@ First run launches an **interactive wizard** that asks you to pick a provider, e
 | `--no-require-edit` | Allow committing the AI message unchanged |
 | `--init` | Run the interactive setup wizard |
 | `--config` | Print the active config path and contents |
+| `-v`, `--version` | Print the package version |
 | `-h` | Show usage. (`--help` is intercepted by git, so use `-h`.) |
 
 ## How it decides to commit

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { spawnSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import {
   existsSync,
   mkdtempSync,
@@ -37,6 +37,7 @@ function parseArgs(argv) {
   let shouldCommit = null;
   let requireEdit = null;
   let printConfig = false;
+  let printVersion = false;
   let runInit = false;
   let shouldAdd = false;
   let providerName = null;
@@ -99,6 +100,11 @@ function parseArgs(argv) {
       continue;
     }
 
+    if (arg === "-v" || arg === "--version") {
+      printVersion = true;
+      continue;
+    }
+
     if (arg === "--init") {
       runInit = true;
       continue;
@@ -115,6 +121,7 @@ Usage:
   git aic --provider               # list available providers
   git aic --no-commit
   git aic --config
+  git aic -v, --version
   git aic --init
 
 Examples:
@@ -143,6 +150,7 @@ Environment:
     shouldCommit,
     requireEdit,
     printConfig,
+    printVersion,
     runInit,
     shouldAdd,
     providerName,
@@ -159,8 +167,36 @@ function buildPrompt(extraPrompt) {
   return cfg.prompt.join("\n").replaceAll(token, extraPrompt || extraPromptFallback);
 }
 
+function getVersion() {
+  const packageJsonPath = new URL("../package.json", import.meta.url);
+  const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf8"));
+  return packageJson.version;
+}
+
+function readStagedDiff() {
+  try {
+    return execFileSync(
+      "git",
+      ["diff", "--cached", "--no-ext-diff"],
+      {
+        encoding: "utf8",
+        maxBuffer: 50 * 1024 * 1024,
+      }
+    );
+  } catch (error) {
+    const detail = error?.message ? `\n${error.message}` : "";
+    throw new Error(`Failed to read staged diff.${detail}`);
+  }
+}
+
 
 const args = parseArgs(process.argv.slice(2));
+
+if (args.printVersion) {
+  console.log(getVersion());
+  process.exit(0);
+}
+
 const configPath = getConfigPath();
 
 if (args.runInit) {
@@ -223,11 +259,12 @@ if (hasStagedChanges.status === 0) {
   fail("No staged changes found. Use: git add <files>");
 }
 
-const diff = run("git", ["diff", "--cached"]);
-
-if (diff.status !== 0) {
-  fail(diff.stderr || "Failed to read staged diff.");
-}
+const diff = readStagedDiff();
+const MAX_DIFF_CHARS = 120_000;
+const safeDiff =
+  diff.length > MAX_DIFF_CHARS
+    ? `${diff.slice(0, MAX_DIFF_CHARS)}\n\n[Diff truncated because it was too large.]`
+    : diff;
 
 const prompt = buildPrompt(args.extraPrompt);
 
@@ -235,7 +272,7 @@ console.log(`Using provider: ${config.provider.command}`);
 
 let raw;
 try {
-  raw = runProvider(config.provider, prompt, diff.stdout);
+  raw = runProvider(config.provider, prompt, safeDiff);
 } catch (error) {
   fail(error.message);
 }
