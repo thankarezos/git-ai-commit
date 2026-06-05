@@ -1,6 +1,6 @@
 # git-aic
 
-Generate a git commit message from your staged diff using any AI CLI you already have on your machine (Claude Code, Gemini CLI, Codex, `llm`, Ollama, or a custom command). The message opens in your editor — save to commit, quit without saving to abort.
+Generate a git commit message from your staged diff using any AI CLI you already have on your machine (Claude Code, Antigravity CLI, Codex, `llm`, Ollama, or a custom command). The message opens in your editor — save to commit, quit without saving to abort.
 
 ```
 $ git aic -ap "mention the migration"
@@ -44,7 +44,7 @@ First run launches an **interactive wizard** that asks you to pick a provider, e
 | `-a`, `--add` | Run `git add -A` before generating |
 | `-p "..."`, `--prompt "..."` | Append extra instructions to the AI prompt |
 | `-ap "..."`, `-pa "..."` | Combine `-a` and `-p` |
-| `--provider <name>`, `-P <name>` | One-off provider override. `<name>` matches a preset command (`claude`, `gemini`, `codex`, `opencode`, `llm`, `ollama`). |
+| `--provider <name>`, `-P <name>` | One-off provider override. `<name>` matches a preset command (`claude`, `agy`, `codex`, `opencode`, `llm`, `ollama`). |
 | `--no-commit` | Generate and edit, but skip the `git commit` |
 | `--commit` | Force commit (overrides `commit: false` in config) |
 | `--require-edit` | Refuse to commit if the saved message is byte-identical to what the AI produced |
@@ -100,7 +100,7 @@ Each field in your user config **replaces** the default if present. If you delet
 The wizard ships with presets for:
 
 - **Claude Code** — `claude -p "{prompt}"` (reads diff from stdin)
-- **Gemini CLI** — `gemini -p "{prompt}"`
+- **Antigravity CLI** — `agy -p "{prompt}"`
 - **Codex CLI** — `codex exec --skip-git-repo-check "{prompt}"`
 - **OpenCode** — `opencode run "{prompt}"`
 - **llm** (Simon Willison) — `llm "{prompt}"`
@@ -108,6 +108,20 @@ The wizard ships with presets for:
 - **Custom** — type your own `command` and `args`
 
 You can edit `provider` in the config file at any time, or rerun `git aic --init`.
+
+### Windows note
+
+Most CLIs work the same on Windows. The exception is a CLI that renders its output to the console instead of stdout (like `agy`): to capture it, `git-aic` must spawn it with no console, which briefly flashes a console window. A provider can opt into this with a `windows` field carrying extra spawn options:
+
+```json
+"provider": {
+  "command": "agy",
+  "args": ["-p", "{prompt}"],
+  "windows": { "detached": true }
+}
+```
+
+CLIs that write to stdout (e.g. `claude`) don't need this and run without any window.
 
 ## Customizing the prompt
 

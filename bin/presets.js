@@ -5,9 +5,13 @@ export const PROVIDER_PRESETS = [
     args: ["-p", "{prompt}"]
   },
   {
-    name: "Gemini CLI",
-    command: "gemini",
-    args: ["-p", "{prompt}"]
+    name: "Antigravity CLI",
+    command: "agy",
+    args: ["-p", "{prompt}"],
+    // agy renders to the Windows console device instead of stdout, so it can
+    // only be captured when spawned with no console (detached). This pops a
+    // brief console window on Windows; CLIs that write to stdout don't need it.
+    windows: { detached: true }
   },
   {
     name: "Codex CLI",
@@ -31,4 +35,4 @@ export const PROVIDER_PRESETS = [
   }
 ];
 
-export const EDITOR_PRESETS = ["nano", "vim", "nvim", "code --wait", "micro", "hx"];
+export const EDITOR_PRESETS = ["nano", "vim", "nvim", "code --wait", "micro", "hx", "notepad"];

@@ -75,7 +75,11 @@ async function pickProvider(rl) {
 
     if (index >= 0 && index < PROVIDER_PRESETS.length) {
       const preset = PROVIDER_PRESETS[index];
-      return { command: preset.command, args: preset.args };
+      return {
+        command: preset.command,
+        args: preset.args,
+        ...(preset.windows ? { windows: preset.windows } : {}),
+      };
     }
 
     if (index === PROVIDER_PRESETS.length) {

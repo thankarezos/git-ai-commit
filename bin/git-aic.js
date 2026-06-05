@@ -16,6 +16,7 @@ import { runInitWizard } from "./wizard.js";
 import { cleanCommitMessage } from "./clean.js";
 import { extractCommitMessage } from "./extract.js";
 import { runProvider } from "./run-provider.js";
+import { spawnCross } from "./spawn.js";
 import { applyUserOverrides, getConfiguration } from "./prompts.js";
 import { getConfigPath, loadConfig } from "./get-config-path.js";
 import { PROVIDER_PRESETS } from "./presets.js";
@@ -28,6 +29,9 @@ function fail(message, code = 1) {
 function run(command, args, options = {}) {
   return spawnSync(command, args, {
     encoding: "utf8",
+    // Suppress the transient console window Windows flashes for piped child
+    // processes (no effect on other platforms).
+    windowsHide: true,
     ...options,
   });
 }
@@ -41,6 +45,7 @@ function parseArgs(argv) {
   let runInit = false;
   let shouldAdd = false;
   let providerName = null;
+  let verbose = false;
 
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
@@ -105,6 +110,11 @@ function parseArgs(argv) {
       continue;
     }
 
+    if (arg === "-V" || arg === "--verbose") {
+      verbose = true;
+      continue;
+    }
+
     if (arg === "--init") {
       runInit = true;
       continue;
@@ -117,11 +127,12 @@ Usage:
   git aic -a                       # stage all changes first (git add -A)
   git aic -p "extra prompt"
   git aic -ap "extra prompt"       # combine -a and -p
-  git aic --provider gemini        # one-off provider override (also -P)
+  git aic --provider agy           # one-off provider override (also -P)
   git aic --provider               # list available providers
   git aic --no-commit
   git aic --config
   git aic -v, --version
+  git aic -V, --verbose           # print the prompt and raw provider output
   git aic --init
 
 Examples:
@@ -154,6 +165,7 @@ Environment:
     runInit,
     shouldAdd,
     providerName,
+    verbose,
   };
 }
 
@@ -181,6 +193,7 @@ function readStagedDiff() {
       {
         encoding: "utf8",
         maxBuffer: 50 * 1024 * 1024,
+        windowsHide: true,
       }
     );
   } catch (error) {
@@ -228,7 +241,11 @@ if (args.providerName) {
     const names = PROVIDER_PRESETS.map((p) => p.command).join(", ");
     fail(`Unknown provider: ${args.providerName}. Available: ${names}`);
   }
-  config.provider = { command: preset.command, args: preset.args };
+  config.provider = {
+    command: preset.command,
+    args: preset.args,
+    ...(preset.windows ? { windows: preset.windows } : {}),
+  };
 }
 
 if (args.printConfig) {
@@ -270,11 +287,23 @@ const prompt = buildPrompt(args.extraPrompt);
 
 console.log(`Using provider: ${config.provider.command}`);
 
+if (args.verbose) {
+  console.error("[verbose] ----- prompt -----");
+  console.error(prompt);
+  console.error("[verbose] ----- end prompt -----");
+}
+
 let raw;
 try {
-  raw = runProvider(config.provider, prompt, safeDiff);
+  raw = runProvider(config.provider, prompt, safeDiff, { verbose: args.verbose });
 } catch (error) {
   fail(error.message);
+}
+
+if (args.verbose) {
+  console.error("[verbose] ----- raw provider output -----");
+  console.error(raw);
+  console.error("[verbose] ----- end raw provider output -----");
 }
 
 const message = extractCommitMessage(raw);
@@ -291,8 +320,12 @@ writeFileSync(file, `${message.trim()}\n`);
 const before = sha256(readFileSync(file, "utf8"));
 const mtimeBefore = statSync(file).mtimeMs;
 
-const editor = process.env.EDITOR || config.editor || "nano";
-const editorResult = spawnSync(editor, [file], {
+const defaultEditor = process.platform === "win32" ? "notepad" : "nano";
+const editor = process.env.EDITOR || config.editor || defaultEditor;
+// Editor configs can carry flags (e.g. "code --wait"), so split the command
+// from its arguments before spawning.
+const [editorCommand, ...editorArgs] = editor.trim().split(/\s+/);
+const editorResult = spawnCross(editorCommand, [...editorArgs, file], {
   stdio: "inherit",
 });
 
