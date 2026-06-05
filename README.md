@@ -125,13 +125,15 @@ CLIs that write to stdout (e.g. `claude`) don't need this and run without any wi
 
 ## Customizing the prompt
 
-The base prompt template, the `<commit_message>` tag, and the cleanup patterns live in `bin/prompts.json`. Edit that file to:
+`git aic --init` copies the prompt template, the `<commit_message>` tag, and the cleanup patterns into your **config file** (run `git aic --config` to see its path and contents). Edit the config file to customize them — these values override the built-in defaults:
 
 - Change tone, rules, or allowed Conventional Commit types in `prompt`.
 - Add line patterns to `removeLinesMatching` to strip more AI boilerplate.
 - Add line patterns to `stopLinesMatching` to cut off output when the AI starts rambling.
 
 Patterns are case-insensitive JS regex strings.
+
+The built-in defaults live in `bin/prompts.json`; editing that only changes the fallback for fields your config doesn't set, and is overwritten on reinstall — so prefer the config file.
 
 ## Tests
 
