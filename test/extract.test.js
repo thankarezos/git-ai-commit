@@ -15,9 +15,9 @@ describe("extractCommitMessage", () => {
     assert.equal(extractCommitMessage(raw), "feat: x\n\nbody");
   });
 
-  test("strips Claude/Anthropic noise inside the tag", () => {
+  test("strips Claude/Anthropic attribution inside the tag", () => {
     const raw =
-      "<commit_message>\nfeat: x\nClaude wrote this\nbody\n</commit_message>";
+      "<commit_message>\nfeat: x\nGenerated with Claude Code\nbody\n</commit_message>";
     assert.equal(extractCommitMessage(raw), "feat: x\nbody");
   });
 

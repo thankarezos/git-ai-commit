@@ -2,7 +2,7 @@ export const PROVIDER_PRESETS = [
   {
     name: "Claude Code",
     command: "claude",
-    args: ["-p", "{prompt}"]
+    args: ["-p", "--no-session-persistence", "{prompt}"]
   },
   {
     name: "Antigravity CLI",
@@ -16,7 +16,7 @@ export const PROVIDER_PRESETS = [
   {
     name: "Codex CLI",
     command: "codex",
-    args: ["exec", "--skip-git-repo-check", "{prompt}"]
+    args: ["exec", "--skip-git-repo-check", "--ephemeral", "{prompt}"]
   },
   {
     name: "OpenCode",

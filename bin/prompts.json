@@ -35,8 +35,8 @@
     "^Here.*commit message",
     "^Co-Authored-By:",
     "^Signed-off-by:",
-    "Claude",
-    "Anthropic"
+    "Generated (with|by).*(Claude|Anthropic)",
+    "noreply@anthropic\\.com"
   ],
   "stopLinesMatching": [
     "^Wait.*rules"
