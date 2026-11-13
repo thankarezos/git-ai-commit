@@ -70,7 +70,7 @@ Stored at `~/.config/git-aic/config.json` (override with `GIT_AIC_CONFIG=/path/t
 {
   "provider": {
     "command": "claude",
-    "args": ["-p", "{prompt}"]
+    "args": ["-p", "--no-session-persistence", "{prompt}"]
   },
   "editor": "nano",
   "commit": true,
@@ -99,15 +99,26 @@ Each field in your user config **replaces** the default if present. If you delet
 
 The wizard ships with presets for:
 
-- **Claude Code** — `claude -p "{prompt}"` (reads diff from stdin)
+- **Claude Code** — `claude -p --no-session-persistence "{prompt}"` (reads diff from stdin)
 - **Antigravity CLI** — `agy -p "{prompt}"`
-- **Codex CLI** — `codex exec --skip-git-repo-check "{prompt}"`
+- **Codex CLI** — `codex exec --skip-git-repo-check --ephemeral "{prompt}"`
 - **OpenCode** — `opencode run "{prompt}"`
 - **llm** (Simon Willison) — `llm "{prompt}"`
 - **Ollama** — `ollama run llama3 "{prompt}"`
 - **Custom** — type your own `command` and `args`
 
 You can edit `provider` in the config file at any time, or rerun `git aic --init`.
+
+### Avoiding leftover sessions
+
+Agent CLIs like Claude Code and Codex save every run as a conversation by default, so each generated commit message would show up in `claude --resume` / `codex resume`. The presets turn this off with `--no-session-persistence` (Claude Code) and `--ephemeral` (Codex). If you use a custom provider built on one of these CLIs, add the flag to its `args` yourself.
+
+### Upgrading from 0.1.5 or earlier
+
+Updating the package does not change your existing config. Either rerun `git aic --init` and choose to overwrite (this resets any customizations), or edit `~/.config/git-aic/config.json` by hand:
+
+- Add `"--no-session-persistence"` to `provider.args` for `claude`, or `"--ephemeral"` for `codex exec`.
+- In `removeLinesMatching`, replace `"Claude"` and `"Anthropic"` with `"Generated (with|by).*(Claude|Anthropic)"` and `"noreply@anthropic\\.com"`. The old patterns removed *any* line mentioning Claude or Anthropic, including your commit subject.
 
 ### Windows note
 
